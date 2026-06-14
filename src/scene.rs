@@ -46,6 +46,37 @@ fn surface_name(s: Surface) -> &'static str {
     }
 }
 
+/// Resolve a 4-char texture-field sentence (kind+size+palette+seed, e.g.
+/// "vse3") into a material — the same mapping the substrate's grammar uses,
+/// so a material can be a field coordinate rather than a free name. Field
+/// kinds: g/l -> plaster, v -> tile, f -> marble. Palette -> tint (the
+/// field palette's primary color). Palettes mirror texture_asset_grammar.
+fn material_from_field(sentence: &str) -> Result<Material, String> {
+    let cs: Vec<char> = sentence.chars().collect();
+    if cs.len() != 4 {
+        return Err(format!("field sentence must be 4 chars: {sentence:?}"));
+    }
+    let surface = match cs[0] {
+        'g' | 'l' => Surface::Plaster,
+        'v' => Surface::Tile,
+        'f' => Surface::Marble,
+        other => return Err(format!("unknown field kind {other:?}")),
+    };
+    if !matches!(cs[1], 's' | 'm' | 'b') {
+        return Err(format!("unknown field size {:?}", cs[1]));
+    }
+    // palette primary colors, matching _PALETTES in texture_asset_grammar
+    let tint = match cs[2] {
+        'e' => (0xff, 0x6a, 0x00), // ember
+        'i' => (0xbf, 0xe8, 0xff), // ice
+        'm' => (0x7d, 0xdc, 0x6a), // moss
+        'o' => (0x2a, 0x24, 0x33), // obsidian
+        other => return Err(format!("unknown field palette {other:?}")),
+    };
+    let seed: u32 = cs[3].to_digit(10).ok_or("field seed must be 0-9")? as u32;
+    Ok(Material { surface, seed, tint })
+}
+
 impl Scene {
     pub fn parse(text: &str) -> Result<Scene, String> {
         let mut lines = text.lines().map(|l| l.trim()).filter(|l| !l.is_empty());
@@ -78,8 +109,21 @@ impl Scene {
                 None => continue,
             };
             let parts: Vec<&str> = rest.split_whitespace().collect();
+            // field-coordinate form: `mat <id> @<sentence>` — the material is
+            // itself a 4-char texture-field coordinate (kind+size+palette+seed),
+            // resolved the same way the substrate's grammar does.
+            if parts.len() == 2 {
+                if let Some(sentence) = parts[1].strip_prefix('@') {
+                    let id: usize = parts[0].parse().map_err(|_| "bad tile id")?;
+                    if id >= 8 {
+                        return Err(format!("tile id {id} out of range 0..8"));
+                    }
+                    materials[id] = material_from_field(sentence)?;
+                    continue;
+                }
+            }
             if parts.len() != 4 {
-                return Err(format!("mat line needs 4 fields, got {}: {line:?}", parts.len()));
+                return Err(format!("mat line needs `<id> @<sentence>` or 4 fields, got {}: {line:?}", parts.len()));
             }
             let id: usize = parts[0].parse().map_err(|_| "bad tile id")?;
             if id >= 8 {
@@ -176,5 +220,17 @@ mod tests {
     #[test]
     fn wrong_row_width_refuses() {
         assert!(Scene::parse("v1\ngrid 4x1\n11\n").is_err());
+    }
+
+    #[test]
+    fn field_coordinate_materials_resolve() {
+        // materials cited as field sentences (@vse3, @fmi2) resolve via the
+        // grammar: kind -> surface, palette -> tint, seed digit -> seed.
+        let s = Scene::parse("v1\ngrid 4x3\n1111\n1..1\n1111\nmat 1 @vse3\n").unwrap();
+        assert_eq!(s.material(Tile::BEDROOM).surface, Surface::Tile); // v -> tile
+        assert_eq!(s.material(Tile::BEDROOM).seed, 3);                // seed digit
+        assert_eq!(s.material(Tile::BEDROOM).tint, (0xff, 0x6a, 0x00)); // e -> ember
+        // a bad field sentence refuses
+        assert!(Scene::parse("v1\ngrid 4x3\n1111\n1..1\n1111\nmat 1 @zzzz\n").is_err());
     }
 }
