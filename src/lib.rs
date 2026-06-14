@@ -21,6 +21,7 @@ pub mod people;
 pub mod render;
 pub mod texture;
 pub mod routine;
+pub mod scene;
 pub mod space;
 pub mod time;
 pub mod traits;

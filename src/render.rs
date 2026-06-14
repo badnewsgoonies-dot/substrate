@@ -66,6 +66,21 @@ pub fn render_frame(
     objects: &Objects, clock: &InGameClock, fov_tan: f32,
     target: Option<Target>, interact_pulse: f32,
 ) {
+    // Default behavior: materials come from the built-in table.
+    render_frame_with(frame, grid, body, npcs, objects, clock, fov_tan,
+                      target, interact_pulse, &material_for);
+}
+
+/// Same renderer, but the wall material for each tile is supplied by a
+/// lookup function. This is the seam where a *scene coordinate* drives
+/// the art: pass a closure backed by a parsed `Scene` and the raycaster
+/// textures itself from an addressable description instead of hardcode.
+pub fn render_frame_with(
+    frame: &mut Frame, grid: &TileGrid, body: &PlayerBody, npcs: &[Npc],
+    objects: &Objects, clock: &InGameClock, fov_tan: f32,
+    target: Option<Target>, interact_pulse: f32,
+    material_lookup: &dyn Fn(Tile) -> Material,
+) {
     let horizon = (HEIGHT as f32 * 0.5 + body.bob * HEIGHT as f32) as i32;
     let ambient = objects.aggregate_ambient(clock);
 
@@ -92,7 +107,7 @@ pub fn render_frame(
 
         // ART FROM MATH: the wall's color comes from a procedural material
         // sampled at the ray-hit coordinate, per pixel — no stored texture.
-        let mat = material_for(hit.tile);
+        let mat = material_lookup(hit.tile);
         // texture u runs along the wall (world units) from the hit point
         let wall_u = match hit.side {
             RaySide::EastWest => hit.hit_x,
