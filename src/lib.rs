@@ -19,6 +19,7 @@ pub mod needs;
 pub mod objects;
 pub mod people;
 pub mod render;
+pub mod texture;
 pub mod routine;
 pub mod space;
 pub mod time;

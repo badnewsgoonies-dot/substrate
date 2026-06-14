@@ -16,9 +16,23 @@ use crate::kinds::{LightContribution, Object};
 use crate::objects::Objects;
 use crate::people::Npc;
 use crate::space::{cast_ray, RaySide, Tile, TileGrid, Vec2};
+use crate::texture::{sample, Material, Surface};
 use crate::time::InGameClock;
 
 mod sprites;
+
+/// The world's art budget: each tile kind -> a procedural material
+/// (a few bytes). Walls are textured by sampling this at the ray hit,
+/// so there are no stored wall textures anywhere.
+fn material_for(tile: Tile) -> Material {
+    match tile {
+        Tile::BEDROOM => Material { surface: Surface::Wood, seed: 7, tint: (196, 150, 96) },
+        Tile::KITCHEN => Material { surface: Surface::Brick, seed: 19, tint: (150, 120, 110) },
+        Tile::DOORFRAME => Material { surface: Surface::Plaster, seed: 3, tint: (172, 158, 138) },
+        Tile::BATHROOM => Material { surface: Surface::Tile, seed: 11, tint: (210, 222, 230) },
+        _ => Material { surface: Surface::Plaster, seed: 1, tint: (180, 180, 180) },
+    }
+}
 
 pub const WIDTH: usize = 800;
 pub const HEIGHT: usize = 500;
@@ -75,20 +89,28 @@ pub fn render_frame(
         let line_height = (HEIGHT as f32 / hit.perp_dist) as i32;
         let y0 = horizon - line_height / 2;
         let y1 = horizon + line_height / 2;
-        let (mut r, mut g, mut b) = match hit.tile {
-            Tile::BEDROOM => (196u8, 164u8, 120u8),
-            Tile::KITCHEN => (128u8, 142u8, 160u8),
-            Tile::DOORFRAME => (160u8, 148u8, 128u8),
-            Tile::BATHROOM => (210u8, 218u8, 225u8),
-            _ => (180u8, 180u8, 180u8),
+
+        // ART FROM MATH: the wall's color comes from a procedural material
+        // sampled at the ray-hit coordinate, per pixel — no stored texture.
+        let mat = material_for(hit.tile);
+        // texture u runs along the wall (world units) from the hit point
+        let wall_u = match hit.side {
+            RaySide::EastWest => hit.hit_x,
+            RaySide::NorthSouth => hit.hit_y,
         };
-        if hit.side == RaySide::EastWest {
-            r = (r as f32 * 0.72) as u8;
-            g = (g as f32 * 0.72) as u8;
-            b = (b as f32 * 0.72) as u8;
-        }
+        let side_dim = if hit.side == RaySide::EastWest { 0.72 } else { 1.0 };
         let fog = (1.0 / (1.0 + hit.perp_dist * 0.35)).clamp(0.0, 1.0);
-        frame.fill_column(x, y0, y1, rgb(scale(r, fog), scale(g, fog), scale(b, fog)));
+        let denom = (y1 - y0).max(1) as f32;
+        let yv0 = y0.max(0);
+        let yv1 = y1.min(HEIGHT as i32);
+        for y in yv0..yv1 {
+            // texture v runs down the wall slice (3 world units tall)
+            let wall_v = (y - y0) as f32 / denom * 3.0;
+            let (cr, cg, cb) = sample(&mat, wall_u, wall_v);
+            let lit = side_dim * fog;
+            frame.pixels[y as usize * WIDTH + x] =
+                rgb(scale(cr, lit), scale(cg, lit), scale(cb, lit));
+        }
     }
 
     for obj in objects.iter() { draw_object(frame, body, obj, clock, fov_tan, horizon); }
