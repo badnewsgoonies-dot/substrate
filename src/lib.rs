@@ -9,6 +9,7 @@
 //! the World coordinator; v0.8.5 adds kindgen — declarative-spec-to-
 //! Rust-source generator. Mug is the first golden-tested generated kind.
 
+pub mod addressing;
 pub mod ai;
 pub mod body;
 pub mod interact;

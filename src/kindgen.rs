@@ -115,6 +115,36 @@ pub fn manifest_entry_for(tag_name: &str) -> Option<&'static UniverseEntry> {
     UNIVERSE_MANIFEST.iter().find(|e| e.tag_name == tag_name)
 }
 
+impl Archetype {
+    /// The facet (archetype-conformance) names a generated kind of this
+    /// archetype exhibits, in the SAME vocabulary the manifest uses to
+    /// declare hand-crafted kinds (e.g. a `SwitchableFaucet` generated kind
+    /// reads as `"SwitchableFaucet"`, matching the hand-crafted Sink/Shower).
+    /// This keeps the census uniform whether a kind is generated or not.
+    pub fn conformance(&self) -> &'static [&'static str] {
+        match self {
+            Archetype::SimpleLiquidContainer { .. } => &["LiquidContainer"],
+            Archetype::SwitchableFaucet { .. } => &["SwitchableFaucet"],
+            Archetype::DecorativeItem => &[],
+            Archetype::SimpleOpenable => &["SimpleOpenable"],
+        }
+    }
+}
+
+impl UniverseEntry {
+    /// The kind's declared facet set — its archetype conformance, whether
+    /// the kind is generated (derived from its archetype) or hand-crafted
+    /// (declared inline). This is the census the addressing field indexes:
+    /// the manifest is the single source of which kind has which facets,
+    /// and the meta-tests already keep it bijective with `ALL_KIND_TAGS`.
+    pub fn facets(&self) -> &'static [&'static str] {
+        match &self.origin {
+            KindOrigin::Generated(spec) => spec.archetype.conformance(),
+            KindOrigin::HandCrafted { archetype_conformance } => archetype_conformance,
+        }
+    }
+}
+
 // ---------- Code emission ----------
 
 pub struct IntegrationPatch {
