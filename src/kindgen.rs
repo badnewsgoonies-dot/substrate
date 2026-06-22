@@ -65,6 +65,12 @@ pub static PAINTING_SPEC: KindSpec = KindSpec {
     archetype: Archetype::DecorativeItem,
 };
 
+pub static CHAIR_SPEC: KindSpec = KindSpec {
+    name: "Chair",
+    doc: "Chair: a wooden chair (back, seat, four legs).",
+    archetype: Archetype::DecorativeItem,
+};
+
 pub static DIARY_SPEC: KindSpec = KindSpec {
     name: "Diary",
     doc: "Diary: a private journal with a pressed-leather cover.",
@@ -72,7 +78,7 @@ pub static DIARY_SPEC: KindSpec = KindSpec {
 };
 
 pub static GENERATED_SPECS: &[&KindSpec] =
-    &[&MUG_SPEC, &PLANT_SPEC, &PAINTING_SPEC, &DIARY_SPEC];
+    &[&MUG_SPEC, &PLANT_SPEC, &PAINTING_SPEC, &CHAIR_SPEC, &DIARY_SPEC];
 
 pub fn generated_specs() -> &'static [&'static KindSpec] { GENERATED_SPECS }
 
@@ -106,6 +112,7 @@ pub static UNIVERSE_MANIFEST: &[UniverseEntry] = &[
     UniverseEntry { tag_name: "Mug",         origin: KindOrigin::Generated(&MUG_SPEC) },
     UniverseEntry { tag_name: "Plant",       origin: KindOrigin::Generated(&PLANT_SPEC) },
     UniverseEntry { tag_name: "Painting",    origin: KindOrigin::Generated(&PAINTING_SPEC) },
+    UniverseEntry { tag_name: "Chair",       origin: KindOrigin::Generated(&CHAIR_SPEC) },
     UniverseEntry { tag_name: "Diary",       origin: KindOrigin::Generated(&DIARY_SPEC) },
 ];
 

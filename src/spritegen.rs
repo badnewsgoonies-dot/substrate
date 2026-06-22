@@ -60,7 +60,7 @@ pub fn emit_sprite_source(spec: &SpriteSpec) -> String {
 /// The chair sprite — the SAME rects the browser scene-coordinate carries.
 pub const CHAIR_SPEC: SpriteSpec = SpriteSpec {
     name: "gen_chair",
-    kind_type: "Plant",
+    kind_type: "Chair",
     doc: "Chair sprite (generated from a SpriteSpec; rects shared with the browser).",
     rects: &[
         Rect { u0: 0.18, u1: 0.40, v0: 0.08, v1: 0.62, rgb: (150, 96, 40) },
@@ -107,6 +107,6 @@ mod tests {
     #[test]
     fn golden_matches_on_disk() {
         assert_eq!(emit_sprite_source(&CHAIR_SPEC),
-                   include_str!("render/sprites/gen_crate.rs"));
+                   include_str!("render/sprites/gen_chair.rs"));
     }
 }

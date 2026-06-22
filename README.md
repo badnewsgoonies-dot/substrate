@@ -31,6 +31,8 @@ It is impossible to silently add or remove a kind from the universe.
 
 Adding a new sprite is three small edits: one new file, one line in `sprites/mod.rs`, two match arms in `draw_object`.
 
+`src/spritegen.rs` extends `kindgen`'s spec→source→golden discipline to rendering: a `SpriteSpec` (a stack of coloured rects in normalized billboard coords) emits a complete `draw_*` module, golden-tested byte-exact against its on-disk file, and serializes to the same `spr` scene-coordinate line the browser raycaster parses. The Chair sprite is authored this way and routed live through `draw_object`.
+
 ### Domain layers
 
 - `body.rs` — player position, posture, momentum, needs decay
@@ -47,7 +49,7 @@ Adding a new sprite is three small edits: one new file, one line in `sprites/mod
 
 ## The apartment
 
-18 objects + 1 NPC. Bedroom has bed, nightstand (with mug + diary), lamp, dresser, and a painting by the dresser. Kitchen has fridge, stove, sink, coffee maker, book on the counter, plant by the window. Bathroom has toilet, bath-sink, shower, bathtub. One roommate with a daily schedule.
+19 objects + 1 NPC. Bedroom has bed, nightstand (with mug + diary), lamp, dresser, and a painting by the dresser. Kitchen has fridge, stove, sink, coffee maker, book on the counter, plant by the window, and a chair on the floor. Bathroom has toilet, bath-sink, shower, bathtub. One roommate with a daily schedule.
 
 Game starts at 7:14 am with full needs. Neglect it and you will get hungry, tired, dirty, sad — in that order of urgency.
 
@@ -59,11 +61,11 @@ Game starts at 7:14 am with full needs. Neglect it and you will get hungry, tire
 
 ## Counts (as of this commit)
 
-- 49 source files
+- 55 source files
 - ~6,500 LOC
-- 268 tests (1 test per ~24 LOC)
+- 282 tests
 - 4 archetypes
-- 18 kinds (14 hand-crafted + 4 generated)
+- 19 kinds (14 hand-crafted + 5 generated)
 - 1 NPC
 
 ## License

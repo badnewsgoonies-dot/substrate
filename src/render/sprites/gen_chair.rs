@@ -1,10 +1,10 @@
 //! Chair sprite (generated from a SpriteSpec; rects shared with the browser).
 
-use crate::kinds::Plant;
+use crate::kinds::Chair;
 use crate::render::{rgb, scale, Frame, HEIGHT, WIDTH};
 
 pub(crate) fn draw_gen_chair(
-    frame: &mut Frame, _obj: &Plant, fog: f32,
+    frame: &mut Frame, _obj: &Chair, fog: f32,
     top_y: f32, left_x: f32, sprite_w: f32, sprite_h: f32, dist: f32,
 ) {
     let x0 = left_x.max(0.0) as i32;

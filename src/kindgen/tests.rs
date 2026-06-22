@@ -26,6 +26,11 @@ fn painting_spec_emits_source_matching_disk() {
 }
 
 #[test]
+fn chair_spec_emits_source_matching_disk() {
+    assert_eq!(emit_kind_source(&CHAIR_SPEC), include_str!("../kinds/chair.rs"));
+}
+
+#[test]
 fn diary_spec_emits_source_matching_disk() {
     assert_eq!(emit_kind_source(&DIARY_SPEC), include_str!("../kinds/diary.rs"));
 }
@@ -324,6 +329,7 @@ fn registry_contains_all_current_specs() {
     assert!(names.contains(&"Mug"));
     assert!(names.contains(&"Plant"));
     assert!(names.contains(&"Painting"));
+    assert!(names.contains(&"Chair"));
     assert!(names.contains(&"Diary"));
 }
 
@@ -396,8 +402,8 @@ fn hand_crafted_kinds_declare_at_least_one_archetype() {
 }
 
 #[test]
-fn universe_has_exactly_eighteen_kinds() {
-    assert_eq!(UNIVERSE_MANIFEST.len(), 18);
+fn universe_has_exactly_nineteen_kinds() {
+    assert_eq!(UNIVERSE_MANIFEST.len(), 19);
 }
 
 #[test]

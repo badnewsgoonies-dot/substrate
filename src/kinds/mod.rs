@@ -10,6 +10,7 @@ pub mod bath_sink;
 pub mod bathtub;
 pub mod bed;
 pub mod book;
+pub mod chair;
 pub mod coffee_maker;
 pub mod diary;
 pub mod dresser;
@@ -29,6 +30,7 @@ pub use bath_sink::BathSink;
 pub use bathtub::Bathtub;
 pub use bed::Bed;
 pub use book::Book;
+pub use chair::Chair;
 pub use coffee_maker::{BrewState, CoffeeMaker};
 pub use diary::Diary;
 pub use dresser::Dresser;
@@ -70,6 +72,7 @@ pub enum ObjectKindTag {
     Mug,
     Plant,
     Painting,
+    Chair,
     Diary,
 }
 
@@ -93,6 +96,7 @@ impl ObjectKindTag {
             ObjectKindTag::Mug => "Mug",
             ObjectKindTag::Plant => "Plant",
             ObjectKindTag::Painting => "Painting",
+            ObjectKindTag::Chair => "Chair",
             ObjectKindTag::Diary => "Diary",
         }
     }
@@ -116,6 +120,7 @@ pub const ALL_KIND_TAGS: &[ObjectKindTag] = &[
     ObjectKindTag::Mug,
     ObjectKindTag::Plant,
     ObjectKindTag::Painting,
+    ObjectKindTag::Chair,
     ObjectKindTag::Diary,
 ];
 
@@ -138,6 +143,7 @@ pub enum Object {
     Mug(Mug),
     Plant(Plant),
     Painting(Painting),
+    Chair(Chair),
     Diary(Diary),
 }
 
@@ -161,6 +167,7 @@ impl Object {
             Object::Mug(x) => x.pos,
             Object::Plant(x) => x.pos,
             Object::Painting(x) => x.pos,
+            Object::Chair(x) => x.pos,
             Object::Diary(x) => x.pos,
         }
     }
@@ -184,6 +191,7 @@ impl Object {
             Object::Mug(_) => ObjectKindTag::Mug,
             Object::Plant(_) => ObjectKindTag::Plant,
             Object::Painting(_) => ObjectKindTag::Painting,
+            Object::Chair(_) => ObjectKindTag::Chair,
             Object::Diary(_) => ObjectKindTag::Diary,
         }
     }
@@ -207,6 +215,7 @@ impl Object {
             Object::Mug(_) => {}
             Object::Plant(_) => {}
             Object::Painting(_) => {}
+            Object::Chair(_) => {}
             Object::Diary(x) => x.toggle_open(),
         }
     }
@@ -316,8 +325,8 @@ mod tests {
     use super::*;
 
     #[test]
-    fn all_kind_tags_has_eighteen_entries() {
-        assert_eq!(ALL_KIND_TAGS.len(), 18);
+    fn all_kind_tags_has_nineteen_entries() {
+        assert_eq!(ALL_KIND_TAGS.len(), 19);
     }
 
     #[test]

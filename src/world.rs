@@ -4,7 +4,7 @@ use crate::ai::ai_tick_npc;
 use crate::body::PlayerBody;
 use crate::interact::{apply, resolve_target, Target, Verb};
 use crate::kinds::{
-    BathSink, Bathtub, Bed, Book, CoffeeMaker, Diary, Dresser, Fridge, Lamp, Mug, Nightstand,
+    BathSink, Bathtub, Bed, Book, Chair, CoffeeMaker, Diary, Dresser, Fridge, Lamp, Mug, Nightstand,
     Object, Painting, Plant, Shower, Sink, Stove, Toilet, WindowObj,
 };
 use crate::mind::Mind;
@@ -26,10 +26,11 @@ pub struct World {
 }
 
 impl World {
-    /// Canonical v0.8 apartment with 18 interactable objects + one
-    /// roommate NPC. All four generated kinds are live in the world:
+    /// Canonical v0.8 apartment with 19 interactable objects + one
+    /// roommate NPC. All five generated kinds are live in the world:
     /// Mug on the nightstand, Plant in the kitchen nook by the window,
-    /// Painting on the bedroom wall by the dresser, Diary on the
+    /// Painting on the bedroom wall by the dresser, Chair on the kitchen
+    /// floor (drawn by the spritegen-authored sprite), Diary on the
     /// nightstand beside the Mug.
     pub fn new_apartment() -> Self {
         let map: Vec<&str> = vec![
@@ -73,6 +74,7 @@ impl World {
         objects.add(Object::Mug(Mug::new(Vec2::new(11.3, 3.3))));
         objects.add(Object::Plant(Plant::new(Vec2::new(9.0, 14.0))));
         objects.add(Object::Painting(Painting::new(Vec2::new(4.5, 3.5))));
+        objects.add(Object::Chair(Chair::new(Vec2::new(5.0, 9.5))));
         objects.add(Object::Diary(Diary::new(Vec2::new(11.3, 3.7))));
 
         let roommate = Npc::with_schedule(
@@ -133,9 +135,9 @@ mod tests {
     use crate::needs::NEED_MAX;
 
     #[test]
-    fn new_apartment_has_18_objects_and_1_npc() {
+    fn new_apartment_has_19_objects_and_1_npc() {
         let w = World::new_apartment();
-        assert_eq!(w.objects.len(), 18);
+        assert_eq!(w.objects.len(), 19);
         assert_eq!(w.npcs.len(), 1);
         assert_eq!(w.npcs[0].name, "roommate");
     }
