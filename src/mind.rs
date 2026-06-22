@@ -25,6 +25,7 @@ pub enum MindObjectKind {
     Mug,
     Plant,
     Painting,
+    Chair,
     Diary,
 }
 
@@ -48,6 +49,7 @@ impl MindObjectKind {
             ObjectKindTag::Mug => Self::Mug,
             ObjectKindTag::Plant => Self::Plant,
             ObjectKindTag::Painting => Self::Painting,
+            ObjectKindTag::Chair => Self::Chair,
             ObjectKindTag::Diary => Self::Diary,
         }
     }

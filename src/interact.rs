@@ -95,6 +95,7 @@ pub fn apply(
                 | ObjectKindTag::Mug
                 | ObjectKindTag::Plant
                 | ObjectKindTag::Painting
+                | ObjectKindTag::Chair
                 | ObjectKindTag::Diary => {}
             }
             mind.know(

@@ -53,6 +53,7 @@ pub fn restore_for_kind(needs: &mut Needs, tag: ObjectKindTag) {
         | ObjectKindTag::Mug
         | ObjectKindTag::Plant
         | ObjectKindTag::Painting
+        | ObjectKindTag::Chair
         | ObjectKindTag::Diary => {}
     }
 }

@@ -272,6 +272,7 @@ fn draw_object(
         Object::Mug(_) => (0.12, 0.55),
         Object::Plant(_) => (0.55, 0.7),
         Object::Painting(_) => (0.6, 1.2),
+        Object::Chair(_) => (0.6, 0.7),
         Object::Diary(_) => (0.15, 0.75),
     };
     let sprite_h = (HEIGHT as f32 / dist * base_h).min(HEIGHT as f32 * 2.0);
@@ -298,6 +299,7 @@ fn draw_object(
         Object::Mug(_) => draw_flat(frame, fog, top_y, left_x, sprite_w, sprite_h, dist, (235, 225, 210)),
         Object::Plant(_) => sprites::draw_plant(frame, fog, top_y, left_x, sprite_w, sprite_h, dist),
         Object::Painting(_) => sprites::draw_painting(frame, fog, top_y, left_x, sprite_w, sprite_h, dist),
+        Object::Chair(c) => sprites::draw_gen_chair(frame, c, fog, top_y, left_x, sprite_w, sprite_h, dist),
         Object::Diary(d) => draw_flat(frame, fog, top_y, left_x, sprite_w, sprite_h, dist, diary_color(d)),
     }
 }
